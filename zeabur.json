@@ -1,0 +1,10 @@
+{
+  "name": "pepo",
+  "region": "aws-cn-northwest-1",
+  "build": {
+    "command": "pip install -r requirements.txt"
+  },
+  "start": {
+    "command": "python3 run.py"
+  }
+}
