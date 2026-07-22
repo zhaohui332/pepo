@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>兆辉防腐科技 · 文章运营助手</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#0d7377;--primary-dark:#095a5e;--primary-light:#14999e;
+  --surface:#111827;--surface-2:#1f2937;--surface-3:#374151;--surface-hover:#4b5563;
+  --text:#e5e7eb;--text-secondary:#9ca3af;--text-muted:#6b7280;
+  --accent:#f59e0b;--accent-hover:#d97706;
+  --success:#10b981;--danger:#ef4444;--border:#374151;
+  --radius:8px;--radius-sm:4px;--shadow:0 4px 24px rgba(0,0,0,.4);
+  --transition:.2s ease;
+  --font:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+}
+html,body{height:100%;background:var(--surface);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.6}
+a{color:var(--primary-light);text-decoration:none}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surface-2)}
+::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:3px}
+
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* Header */
+.header{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 24px;
+  background:linear-gradient(135deg,var(--surface-2),var(--primary-dark));
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.header .logo{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:15px;color:#fff;flex-shrink:0;
+}
+.header .titles{flex:1}
+.header h1{font-size:16px;font-weight:600;color:#fff;letter-spacing:.5px}
+.header .subtitle{font-size:11px;color:var(--text-secondary);margin-top:1px}
+
+.btn-icon{
+  display:flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  color:var(--text);cursor:pointer;transition:all var(--transition);
+  font-size:16px;
+}
+.btn-icon:hover{background:rgba(255,255,255,.15);border-color:var(--primary-light);color:#fff}
+
+.api-dot{
+  display:inline-block;width:8px;height:8px;border-radius:50%;
+  margin-right:6px;vertical-align:middle;
+}
+.api-dot.on{background:var(--success);box-shadow:0 0 6px rgba(16,185,129,.5)}
+.api-dot.off{background:var(--danger);box-shadow:0 0 6px rgba(239,68,68,.4)}
+
+/* Main */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* Left Panel */
+.panel-controls{
+  width:380px;min-width:380px;display:flex;flex-direction:column;
+  border-right:1px solid var(--border);background:var(--surface-2);overflow-y:auto;
+}
+.panel-body{padding:20px;flex:1;overflow-y:auto}
+.panel-footer{padding:12px 20px 20px;border-top:1px solid var(--border)}
+
+/* API Banner */
+.api-banner{
+  display:none;padding:10px 14px;margin:-20px -20px 16px;
+  background:rgba(239,68,68,.12);border-bottom:1px solid rgba(239,68,68,.3);
+  font-size:13px;color:#fca5a5;line-height:1.5;
+}
+.api-banner.show{display:block}
+.api-banner strong{color:#fff}
+.api-banner a{color:var(--accent);cursor:pointer;text-decoration:underline}
+
+.form-group{margin-bottom:16px}
+.form-label{
+  display:block;font-size:11px;font-weight:600;color:var(--text-secondary);
+  letter-spacing:.6px;margin-bottom:5px;
+}
+input[type="text"],input[type="password"],textarea,select{
+  width:100%;padding:9px 11px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);
+  font-size:13px;transition:border-color var(--transition);outline:none;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--primary-light)}
+textarea{resize:vertical;min-height:56px}
+select{
+  cursor:pointer;-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239ca3af'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:32px;
+}
+::placeholder{color:var(--text-muted)}
+
+.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.option-card{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:9px 6px;border-radius:var(--radius-sm);
+  background:var(--surface);border:1.5px solid var(--border);
+  cursor:pointer;transition:all var(--transition);text-align:center;min-height:50px;
+}
+.option-card:hover{border-color:var(--primary-light);background:var(--surface-3)}
+.option-card.active{border-color:var(--primary);background:rgba(13,115,119,.15)}
+.option-card .label{font-size:12px;font-weight:500;color:var(--text);line-height:1.3}
+.option-card .desc{font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.2}
+
+/* Platform info */
+.platform-info{
+  padding:10px 12px;border-radius:var(--radius-sm);
+  background:rgba(13,115,119,.1);border:1px solid rgba(13,115,119,.3);
+  margin-top:8px;display:none;
+}
+.platform-info.show{display:block}
+.platform-info .pi-name{font-weight:600;font-size:13px;color:var(--primary-light);margin-bottom:3px}
+.platform-info .pi-style{font-size:11px;color:var(--accent);margin-bottom:5px}
+.platform-info .pi-rules{font-size:11px;color:var(--text-secondary);line-height:1.5}
+
+/* Button */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:11px 18px;
+  font-family:var(--font);font-size:14px;font-weight:600;
+  border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all var(--transition);
+}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary.generating{background:var(--accent)}
+
+/* Right Panel */
+.panel-output{flex:1;display:flex;flex-direction:column;background:var(--surface);overflow:hidden}
+.output-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;border-bottom:1px solid var(--border);background:var(--surface-2);flex-shrink:0;
+}
+.output-toolbar .left{display:flex;align-items:center;gap:12px}
+.output-toolbar .right{display:flex;gap:6px}
+.tb-title{font-size:13px;font-weight:600;color:var(--text)}
+.tb-count{font-size:12px;color:var(--text-muted)}
+.tb-status{
+  font-size:11px;color:var(--accent);display:none;align-items:center;gap:4px;
+}
+.tb-status.show{display:flex}
+.tb-status .spinner{
+  width:12px;height:12px;border:2px solid var(--accent);
+  border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.btn-outline{
+  background:transparent;border:1px solid var(--border);color:var(--text);
+  padding:7px 12px;font-size:12px;width:auto;border-radius:var(--radius-sm);
+  font-family:var(--font);cursor:pointer;transition:all var(--transition);
+  display:inline-flex;align-items:center;gap:5px;
+}
+.btn-outline:hover{border-color:var(--primary-light);color:var(--primary-light)}
+
+.output-content{flex:1;overflow-y:auto;padding:24px 28px}
+.output-content .placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;text-align:center;color:var(--text-muted);
+}
+.placeholder .icon{font-size:44px;margin-bottom:10px;opacity:.4}
+
+.output-content .article{max-width:760px;margin:0 auto}
+.output-content .article h2{font-size:21px;font-weight:700;margin-bottom:16px;color:#fff;line-height:1.4}
+.output-content .article h3{font-size:16px;font-weight:600;margin-top:22px;margin-bottom:10px;color:var(--primary-light)}
+.output-content .article h4{font-size:14px;font-weight:600;margin-top:16px;margin-bottom:8px;color:var(--accent)}
+.output-content .article p{margin-bottom:12px;text-align:justify}
+.output-content .article ul,.output-content .article ol{margin-bottom:12px;padding-left:20px}
+.output-content .article li{margin-bottom:5px}
+.output-content .article blockquote{
+  border-left:3px solid var(--primary);padding:10px 14px;margin:12px 0;
+  background:rgba(13,115,119,.08);border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  color:var(--text-secondary);font-style:italic;
+}
+.output-content .article strong{color:#fff}
+.output-content .article hr{margin:18px 0;border:none;border-top:1px solid var(--border)}
+.output-content .article code{
+  background:var(--surface-2);padding:2px 6px;border-radius:3px;font-size:12px;
+}
+
+/* Modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center;z-index:100;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;width:480px;max-width:90vw;
+  max-height:85vh;overflow-y:auto;box-shadow:var(--shadow);
+}
+.modal h2{font-size:17px;font-weight:600;margin-bottom:4px;color:#fff}
+.modal .modal-desc{font-size:12px;color:var(--text-secondary);margin-bottom:20px}
+.modal .form-group{margin-bottom:16px}
+.modal .btn-row{display:flex;gap:8px;margin-top:8px}
+.modal .btn-row .btn{flex:1}
+
+/* API presets */
+.preset-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.preset-btn{
+  padding:5px 10px;font-size:11px;font-family:var(--font);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface);color:var(--text-secondary);cursor:pointer;
+  transition:all var(--transition);
+}
+.preset-btn:hover{background:var(--surface-3);border-color:var(--primary-light);color:var(--text)}
+
+.input-with-toggle{position:relative}
+.input-with-toggle input{padding-right:38px}
+.input-with-toggle .toggle-vis{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text-muted);cursor:pointer;
+  font-size:14px;padding:4px;
+}
+.input-with-toggle .toggle-vis:hover{color:var(--text)}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);
+  padding:10px 20px;border-radius:var(--radius-sm);z-index:200;
+  font-size:13px;font-weight:500;
+  opacity:0;transition:all .3s;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--success);color:#fff}
+.toast.error{background:var(--danger);color:#fff}
+.toast.info{background:var(--primary);color:#fff}
+
+@media(max-width:900px){
+  .main{flex-direction:column}
+  .panel-controls{width:100%;min-width:auto;max-height:45vh;border-right:none;border-bottom:1px solid var(--border)}
+  .output-content{padding:16px}
+  .modal{width:92vw;padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">兆</div>
+    <div class="titles">
+      <h1>文章运营助手</h1>
+      <div class="subtitle">
+        <span class="api-dot off" id="apiDot"></span>
+        <span id="apiStatusText">未配置 API</span>
+      </div>
+    </div>
+    <button class="btn-icon" onclick="openSettings()" title="API 设置">⚙</button>
+  </header>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Left: Controls -->
+    <div class="panel-controls">
+      <div class="panel-body">
+        <div class="api-banner" id="apiBanner">
+          ⚠ <strong>API 未配置</strong><br>
+          请点击右上角 <strong>⚙</strong> 设置 API Key 和 API 地址
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="topicInput">文章主题</label>
+          <input type="text" id="topicInput" placeholder="输入文章主题，如：钢衬四氟储罐的耐腐蚀原理">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">目标平台</label>
+          <div class="option-grid" id="platformGrid"></div>
+          <div class="platform-info" id="platformInfo"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">写作角度</label>
+          <div class="option-grid" id="angleGrid"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">文章篇幅</label>
+          <div class="option-grid" id="lengthGrid"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="notesInput">补充要求（可选）</label>
+          <textarea id="notesInput" placeholder="补充具体要求，如：侧重成本对比、强调某项工艺优势等" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <button class="btn btn-primary" id="generateBtn" onclick="generate()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/></svg>
+          生成文章
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Output -->
+    <div class="panel-output">
+      <div class="output-toolbar">
+        <div class="left">
+          <span class="tb-title">文章预览</span>
+          <span class="tb-count" id="charCount"></span>
+          <span class="tb-status" id="genStatus"><span class="spinner"></span> 生成中...</span>
+        </div>
+        <div class="right">
+          <button class="btn-outline" onclick="copyArticle()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            复制
+          </button>
+          <button class="btn-outline" onclick="clearArticle()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            清空
+          </button>
+        </div>
+      </div>
+
+      <div class="output-content" id="outputContent">
+        <div class="placeholder" id="placeholder">
+          <div class="icon">✍</div>
+          <p>输入文章主题，选择平台和角度<br>点击「生成文章」即可开始</p>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:10px">支持 4 个平台 · 5 种写作角度 · 3 种篇幅</div>
+        </div>
+        <div class="article" id="articleContent" style="display:none"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h2>⚙ API 设置</h2>
+    <div class="modal-desc">配置 AI 接口信息，保存后即可生成文章</div>
+
+    <div class="form-group">
+      <label class="form-label">快速选择服务商</label>
+      <div class="preset-row">
+        <button class="preset-btn" onclick="applyPreset('openai')">OpenAI</button>
+        <button class="preset-btn" onclick="applyPreset('deepseek')">DeepSeek</button>
+        <button class="preset-btn" onclick="applyPreset('silicon')">硅基流动</button>
+        <button class="preset-btn" onclick="applyPreset('aliyun')">阿里百炼</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="sApiKey">API Key</label>
+      <div class="input-with-toggle">
+        <input type="password" id="sApiKey" placeholder="sk-...">
+        <button class="toggle-vis" onclick="toggleKeyVis()" id="keyToggle">👁</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="sApiBase">API 地址</label>
+      <input type="text" id="sApiBase" placeholder="https://api.openai.com/v1">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="sModel">模型</label>
+      <input type="text" id="sModel" placeholder="gpt-4o">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveSettings()">保存</button>
+      <button class="btn btn-primary" style="background:var(--surface-3)" onclick="closeSettings()">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ───────────────────────────────────────────────
+const state = { platform: null, angle: null, length: 'medium', generating: false, fullContent: '' };
+
+// ── Init ────────────────────────────────────────────────
+async function init() {
+  await Promise.all([loadPlatforms(), loadAngles(), loadLengths()]);
+  loadSettings();
+  updateApiStatus();
+  setupEnterKey();
+}
+
+function setupEnterKey() {
+  document.getElementById('topicInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generate(); }
+  });
+}
+
+// ── API Config ──────────────────────────────────────────
+const API_PRESETS = {
+  openai: { base: 'https://api.openai.com/v1', model: 'gpt-4o' },
+  deepseek: { base: 'https://api.deepseek.com', model: 'deepseek-chat' },
+  silicon: { base: 'https://api.siliconflow.cn/v1', model: 'Qwen/Qwen2.5-72B-Instruct' },
+  aliyun: { base: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus' },
+};
+
+function applyPreset(name) {
+  const p = API_PRESETS[name];
+  document.getElementById('sApiBase').value = p.base;
+  document.getElementById('sModel').value = p.model;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('sApiKey');
+  const btn = document.getElementById('keyToggle');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem('pepo_api_config');
+    if (saved) {
+      const cfg = JSON.parse(saved);
+      if (cfg.key) document.getElementById('sApiKey').value = cfg.key;
+      if (cfg.base) document.getElementById('sApiBase').value = cfg.base;
+      if (cfg.model) document.getElementById('sModel').value = cfg.model;
+    }
+  } catch(e) {}
+}
+
+function saveSettings() {
+  const key = document.getElementById('sApiKey').value.trim();
+  const base = document.getElementById('sApiBase').value.trim() || 'https://api.openai.com/v1';
+  const model = document.getElementById('sModel').value.trim() || 'gpt-4o';
+  if (!key) { showToast('请填写 API Key', 'error'); return; }
+  try {
+    localStorage.setItem('pepo_api_config', JSON.stringify({ key, base, model }));
+    closeSettings();
+    updateApiStatus();
+    showToast('API 配置已保存', 'success');
+  } catch(e) {
+    showToast('保存失败：' + e.message, 'error');
+  }
+}
+
+function getApiConfig() {
+  try {
+    const saved = localStorage.getItem('pepo_api_config');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return null;
+}
+
+function updateApiStatus() {
+  const cfg = getApiConfig();
+  const dot = document.getElementById('apiDot');
+  const text = document.getElementById('apiStatusText');
+  const banner = document.getElementById('apiBanner');
+  if (cfg && cfg.key) {
+    dot.className = 'api-dot on';
+    text.textContent = cfg.model + ' ✓';
+    banner.classList.remove('show');
+  } else {
+    dot.className = 'api-dot off';
+    text.textContent = '未配置 API';
+    banner.classList.add('show');
+  }
+}
+
+// ── Settings Modal ──────────────────────────────────────
+function openSettings() {
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('show');
+}
+// 点击遮罩关闭
+document.getElementById('settingsModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSettings();
+});
+
+// ── Load Platform Data ──────────────────────────────────
+async function loadPlatforms() {
+  const res = await fetch('/api/platforms');
+  const data = await res.json();
+  const grid = document.getElementById('platformGrid');
+  let first = true;
+  for (const [key, p] of Object.entries(data)) {
+    const div = document.createElement('div');
+    div.className = 'option-card' + (first ? ' active' : '');
+    div.innerHTML = `<span class="label">${p.name}</span><span class="desc">${p.style}</span>`;
+    div.onclick = () => {
+      document.querySelectorAll('#platformGrid .option-card').forEach(c => c.classList.remove('active'));
+      div.classList.add('active');
+      state.platform = key;
+      showPlatformInfo(key, p);
+    };
+    grid.appendChild(div);
+    if (first) { state.platform = key; showPlatformInfo(key, p); first = false; }
+  }
+}
+
+function showPlatformInfo(key, p) {
+  const info = document.getElementById('platformInfo');
+  info.className = 'platform-info show';
+  info.innerHTML = `<div class="pi-name">${p.name}</div>
+    <div class="pi-style">风格：${p.style}</div>
+    <div class="pi-rules">${p.rules.replace(/\n/g, '<br>')}</div>`;
+}
+
+async function loadAngles() {
+  const res = await fetch('/api/angles');
+  const data = await res.json();
+  const grid = document.getElementById('angleGrid');
+  let first = true;
+  for (const [key, a] of Object.entries(data)) {
+    const div = document.createElement('div');
+    div.className = 'option-card' + (first ? ' active' : '');
+    div.innerHTML = `<span class="label">${a.name}</span>`;
+    div.onclick = () => {
+      document.querySelectorAll('#angleGrid .option-card').forEach(c => c.classList.remove('active'));
+      div.classList.add('active');
+      state.angle = key;
+    };
+    grid.appendChild(div);
+    if (first) { state.angle = key; first = false; }
+  }
+}
+
+async function loadLengths() {
+  const res = await fetch('/api/lengths');
+  const data = await res.json();
+  const grid = document.getElementById('lengthGrid');
+  const labels = { short: '精炼', medium: '标准', long: '深度' };
+  let first = true;
+  for (const [key, l] of Object.entries(data)) {
+    const div = document.createElement('div');
+    div.className = 'option-card' + (key === 'medium' ? ' active' : '');
+    div.innerHTML = `<span class="label">${labels[key]}</span><span class="desc">${l.desc}</span>`;
+    div.onclick = () => {
+      document.querySelectorAll('#lengthGrid .option-card').forEach(c => c.classList.remove('active'));
+      div.classList.add('active');
+      state.length = key;
+    };
+    grid.appendChild(div);
+  }
+}
+
+// ── Generate ────────────────────────────────────────────
+async function generate() {
+  const topic = document.getElementById('topicInput').value.trim();
+  if (!topic) { showToast('请先输入文章主题', 'error'); document.getElementById('topicInput').focus(); return; }
+  if (state.generating) return;
+
+  const cfg = getApiConfig();
+  if (!cfg || !cfg.key) {
+    showToast('请先点击右上角 ⚙ 配置 API Key', 'error');
+    openSettings();
+    return;
+  }
+
+  state.generating = true;
+  state.fullContent = '';
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true; btn.classList.add('generating');
+  btn.innerHTML = '<span class="spinner" style="display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite"></span> 生成中...';
+
+  document.getElementById('genStatus').classList.add('show');
+  document.getElementById('placeholder').style.display = 'none';
+  const articleEl = document.getElementById('articleContent');
+  articleEl.style.display = 'block';
+  articleEl.innerHTML = '';
+  document.getElementById('charCount').textContent = '';
+
+  const notes = document.getElementById('notesInput').value.trim();
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic, platform: state.platform, angle: state.angle, length: state.length,
+        additional_notes: notes || undefined,
+        api_key: cfg.key, api_base: cfg.base, model: cfg.model,
+      }),
+    });
+
+    if (!res.ok) { throw new Error(await res.text()); }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop() || '';
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const payload = line.slice(6).trim();
+        if (payload === '[DONE]') { state.generating = false; updateUIAfterDone(); break; }
+        try {
+          const parsed = JSON.parse(payload);
+          if (parsed.error) {
+            showToast(parsed.error, 'error');
+            articleEl.innerHTML = '<div style="padding:20px;border:1px solid rgba(239,68,68,.3);border-radius:8px;background:rgba(239,68,68,.08);color:#fca5a5;text-align:center"><strong>⚠ 生成失败</strong><br><br>' + parsed.error.replace(/\n/g, '<br>') + '</div>';
+            state.generating = false; updateUIAfterDone(); break;
+          }
+          if (parsed.text) {
+            state.fullContent += parsed.text;
+            renderArticle(state.fullContent);
+          }
+        } catch(e) {}
+      }
+    }
+  } catch (err) {
+    showToast('请求失败：' + err.message, 'error');
+    state.generating = false; updateUIAfterDone();
+    articleEl.innerHTML = '<div style="padding:20px;border:1px solid rgba(239,68,68,.3);border-radius:8px;background:rgba(239,68,68,.08);color:#fca5a5;text-align:center"><strong>⚠ 网络错误</strong><br><br>' + err.message + '</div>';
+  }
+  if (state.generating) { state.generating = false; updateUIAfterDone(); }
+}
+
+function updateUIAfterDone() {
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = false; btn.classList.remove('generating');
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/></svg> 生成文章';
+  document.getElementById('genStatus').classList.remove('show');
+  if (state.fullContent) showToast('文章生成完成！', 'success');
+}
+
+// ── Render ─────────────────────────────────────────────
+function renderArticle(md) {
+  let html = md
+    .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+  html = html.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
+  html = html.replace(/<\/ul>\s*<ul>/g, '');
+  html = '<p>' + html + '</p>';
+  html = html.replace(/<p>\s*<\/p>/g, '');
+  html = html.replace(/<p><blockquote>/g, '<blockquote>');
+  html = html.replace(/<\/blockquote><\/p>/g, '</blockquote>');
+
+  document.getElementById('articleContent').innerHTML = html;
+  const plain = state.fullContent.replace(/\s/g, '');
+  document.getElementById('charCount').textContent = plain.length + ' 字';
+}
+
+// ── Actions ────────────────────────────────────────────
+function copyArticle() {
+  if (!state.fullContent) { showToast('没有可复制的内容', 'error'); return; }
+  navigator.clipboard.writeText(state.fullContent).then(() => showToast('已复制到剪贴板', 'success'))
+    .catch(() => showToast('复制失败，请手动选择复制', 'error'));
+}
+
+function clearArticle() {
+  if (!state.fullContent && document.getElementById('articleContent').style.display === 'none') return;
+  state.fullContent = '';
+  document.getElementById('articleContent').style.display = 'none';
+  document.getElementById('articleContent').innerHTML = '';
+  document.getElementById('placeholder').style.display = 'flex';
+  document.getElementById('charCount').textContent = '';
+}
+
+// ── Toast ──────────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast ' + type;
+  requestAnimationFrame(() => el.classList.add('show'));
+  clearTimeout(el._hide);
+  el._hide = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
